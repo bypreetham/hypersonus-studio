@@ -14,7 +14,71 @@ def main(page: ft.Page):
         page.window.height = 840
         page.window.min_width = 960
         page.window.min_height = 680
+        page.window.title_bar_hidden = False
+        page.window.title_bar_buttons_hidden = False
+        page.window.frameless = False
+        page.window.minimizable = True
+        page.window.maximizable = True
+        page.window.resizable = True
         page.window.center()
+
+    def minimize_window(e):
+        page.window.minimized = True
+        page.update()
+
+    def maximize_window(e):
+        page.window.maximized = not page.window.maximized
+        page.update()
+
+    def close_window(e):
+        page.window.close()
+
+    # Top Window Control Bar with Drag Area
+    window_title_bar = ft.WindowDragArea(
+        content=ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.Icons.GRAPHIC_EQ_ROUNDED, color=CYAN_ACCENT, size=18),
+                            ft.Text("Hypersonus Studio", size=13, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
+                        ],
+                        spacing=8,
+                    ),
+                    ft.Row(
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.Icons.REMOVE_ROUNDED,
+                                icon_color=TEXT_MUTED,
+                                icon_size=18,
+                                tooltip="Minimize",
+                                on_click=minimize_window,
+                            ),
+                            ft.IconButton(
+                                icon=ft.Icons.CROP_SQUARE_ROUNDED,
+                                icon_color=TEXT_MUTED,
+                                icon_size=16,
+                                tooltip="Maximize / Restore",
+                                on_click=maximize_window,
+                            ),
+                            ft.IconButton(
+                                icon=ft.Icons.CLOSE_ROUNDED,
+                                icon_color="#FF5252",
+                                icon_size=18,
+                                tooltip="Close",
+                                on_click=close_window,
+                            ),
+                        ],
+                        spacing=0,
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            ),
+            bgcolor="#13171F",
+            padding=ft.padding.symmetric(horizontal=12, vertical=2),
+            border=ft.border.only(bottom=ft.border.BorderSide(1, "#21262D")),
+        )
+    )
 
     # Content Container
     content_area = ft.Container(expand=True, padding=24)
@@ -52,7 +116,7 @@ def main(page: ft.Page):
             content=ft.Column(
                 controls=[
                     ft.Icon(ft.Icons.GRAPHIC_EQ_ROUNDED, color=CYAN_ACCENT, size=32),
-                    ft.Text("Hypersonus", weight=ft.FontWeight.BOLD, size=13, color=TEXT_PRIMARY),
+                    ft.Text("Studio", weight=ft.FontWeight.BOLD, size=13, color=TEXT_PRIMARY),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=2,
@@ -92,13 +156,20 @@ def main(page: ft.Page):
     # Initial View
     render_view(0)
 
-    # Main Layout
+    # Main Layout with Title Bar
     page.add(
-        ft.Row(
+        ft.Column(
             controls=[
-                nav_rail,
-                ft.VerticalDivider(width=1, color="#21262D"),
-                content_area,
+                window_title_bar,
+                ft.Row(
+                    controls=[
+                        nav_rail,
+                        ft.VerticalDivider(width=1, color="#21262D"),
+                        content_area,
+                    ],
+                    expand=True,
+                    spacing=0,
+                ),
             ],
             expand=True,
             spacing=0,
