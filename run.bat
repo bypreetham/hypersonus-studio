@@ -1,19 +1,19 @@
 @echo off
-title Hypersonus Studio Desktop
+title Hypersonus Studio
 echo ========================================================
-echo          Starting Hypersonus Studio Desktop App         
+echo             Starting Hypersonus Studio                  
 echo ========================================================
 echo.
 
 if not exist ".venv\Scripts\activate.bat" (
-    echo [!] Virtual environment not found. Initializing .venv...
+    echo [!] Initializing virtual environment...
     py -3.11 -m venv .venv
     call .venv\Scripts\activate.bat
-    echo [*] Installing dependencies from requirements.txt...
+    echo [*] Installing dependencies...
     pip install -r requirements.txt
 ) else (
     call .venv\Scripts\activate.bat
 )
 
-echo [*] Launching Native Flet Desktop Window...
-python desktop\main.py
+echo [*] Launching Hypersonus Studio...
+python main.py %*

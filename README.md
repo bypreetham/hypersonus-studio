@@ -40,10 +40,8 @@ Hypersonus-studio/
 ├── tests/                         # Automated Unit Tests (Pytest)
 │   └── test_dsp.py                # DSP mathematical validation
 │
-├── run_desktop.bat                # One-click Windows native desktop launcher
-├── run_desktop.ps1                # PowerShell native desktop launcher
-├── run_app.bat                    # One-click Windows web browser launcher
-├── run_app.ps1                    # PowerShell web browser launcher
+├── run.bat                        # Single launcher (Double-click, CMD, or PowerShell)
+├── main.py                        # Root application entry point
 │
 ├── .github/workflows/             # GitHub Actions Automation
 │   └── release.yml                # Automatic build of Windows .exe, Mac .dmg, and Linux .AppImage
@@ -54,12 +52,18 @@ Hypersonus-studio/
 
 ---
 
-##  Quick Start (Desktop App)
+## Quick Start
 
 ### Windows
-Double-click `run_desktop.bat` or run in PowerShell:
+Double-click **`run.bat`** or run in PowerShell / CMD:
 ```powershell
-.\run_desktop.ps1
+.\run.bat
+```
+
+### Direct Python Command
+```powershell
+python main.py          # Native Desktop App (Default)
+python main.py --web    # Browser Studio (Streamlit)
 ```
 
 ### macOS & Linux
@@ -67,7 +71,7 @@ Double-click `run_desktop.bat` or run in PowerShell:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python desktop/main.py
+python main.py
 ```
 
 ---
