@@ -1,0 +1,24 @@
+# Python Version: >=3.10, <=3.11 (Python 3.11 recommended)
+# Unified Audio Processing Application Requirements
+
+# Core Scientific Computing & DSP
+numpy>=1.26.0,<2.1.0
+scipy>=1.13.0
+
+# Audio I/O & Processing
+pydub>=0.25.1
+soundfile>=0.12.1
+sounddevice>=0.5.0
+librosa>=0.10.1
+
+# UI & Visualization
+streamlit>=1.38.0
+flet>=0.25.0
+matplotlib>=3.8.0
+
+# Deep Learning / AI Stem Separation (PyTorch & Demucs)
+torch>=2.1.0
+demucs>=4.0.0
+
+# Testing
+pytest>=8.0.0

@@ -1,0 +1,31 @@
+# Virtual Environment
+.venv/
+env/
+venv/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Audio Processing Output & Temp
+exports/
+temp/
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# Streamlit & Flet Caches and Builds
+.streamlit/
+build/
+dist/
+
+# OS Specific
+Thumbs.db
+Desktop.ini
+.DS_Store

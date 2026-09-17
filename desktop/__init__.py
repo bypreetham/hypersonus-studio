@@ -1,0 +1,1 @@
+"""Hypersonus Studio Desktop Package."""
