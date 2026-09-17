@@ -1,4 +1,4 @@
-# 🎛️ Hypersonus Studio — Multiplatform Audio Processing Suite
+# Hypersonus Studio — Multiplatform Audio Processing Suite
 
 Hypersonus Studio is a modular, cross-platform audio engineering application that consolidates 3D spatialization, binaural channel splitting, phase-inversion vocal suppression, and neural stem extraction into a single, unified studio application.
 
