@@ -36,8 +36,8 @@ class HomeView(ft.Column):
             import torch
             cuda_ready = torch.cuda.is_available()
             accel_text = f"CUDA ({torch.cuda.get_device_name(0)})" if cuda_ready else "CPU Mode"
-        except Exception:
-            accel_text = "PyTorch Ready"
+        except BaseException:
+            accel_text = "CPU Acceleration"
 
         sys_metrics = ft.Row(
             controls=[
