@@ -6,18 +6,18 @@ Available both as a **Native Desktop App (Windows, macOS, Linux)** powered by Fl
 
 ---
 
-## 🚀 Key Modules
+## Key Modules
 
 | Module | Derived From | Key Capabilities |
 | :--- | :--- | :--- |
-| **1. 🎵 3D Ping-Pong Spatializer** | `3daudio.py` | Butterworth bandpass vocal isolation, dynamic stereo ping-pong panning cycles (0.5s–5.0s), center vocal lock, stereo width control. |
-| **2. 🎧 Binaural Surround Splitter** | `surroundSound.py` | Frequency-based channel splitting (vocals to one ear, instruments to the other), adjustable crossfeed blend (to prevent ear fatigue), and ear-swap toggle. |
-| **3. 🎙️ Fast Vocal Remover** | `vocal_remover.py` | Instant center-channel phase inversion (`L - R`), intelligent lowpass bass preservation (keeps kick & bassline intact), and output gain compensation. |
-| **4. 🎼 AI BGM & Vocal Extractor** | `audionumpy.py` | High-fidelity stem separation into isolated Vocals and Background Music (BGM), supporting Spleeter neural networks and high-speed Spectral DSP decomposition. |
+| **1. 3D Ping-Pong Spatializer** | `3daudio.py` | Butterworth bandpass vocal isolation, dynamic stereo ping-pong panning cycles (0.5s–5.0s), center vocal lock, stereo width control. |
+| **2. Binaural Surround Splitter** | `surroundSound.py` | Frequency-based channel splitting (vocals to one ear, instruments to the other), adjustable crossfeed blend (to prevent ear fatigue), and ear-swap toggle. |
+| **3. Fast Vocal Remover** | `vocal_remover.py` | Instant center-channel phase inversion (`L - R`), intelligent lowpass bass preservation (keeps kick & bassline intact), and output gain compensation. |
+| **4. AI BGM & Vocal Extractor** | `audionumpy.py` | High-fidelity stem separation into isolated Vocals and Background Music (BGM), supporting Spleeter neural networks and high-speed Spectral DSP decomposition. |
 
 ---
 
-## 📂 Architecture
+##  Architecture
 
 ```
 Hypersonus-studio/
@@ -54,7 +54,7 @@ Hypersonus-studio/
 
 ---
 
-## ⚡ Quick Start (Desktop App)
+##  Quick Start (Desktop App)
 
 ### Windows
 Double-click `run_desktop.bat` or run in PowerShell:
@@ -94,7 +94,7 @@ Whenever you push a version tag (e.g. `git tag v1.0.0 && git push origin v1.0.0`
 
 ---
 
-## 🧪 Testing
+## Testing
 Run automated DSP test suite:
 ```powershell
 pytest tests/test_dsp.py -v
@@ -102,9 +102,9 @@ pytest tests/test_dsp.py -v
 
 ---
 
-## 📜 License & Acknowledgments
+## License & Acknowledgments
 
-This project is licensed under the [BSD 3-Clause License](LICENSE) — Copyright (c) 2026 Hari.
+This project is licensed under the [BSD 3-Clause License](LICENSE) — Copyright (c) 2026 Hari Preetham Lanka.
 
 ### Third-Party Libraries
 Hypersonus Studio stands on the shoulders of these open-source projects:
