@@ -2,7 +2,7 @@
 
 Hypersonus Studio is a modular, cross-platform audio engineering application that consolidates 3D spatialization, binaural channel splitting, phase-inversion vocal suppression, and neural stem extraction into a single, unified studio application.
 
-Available both as a **Native Desktop App (Windows, macOS, Linux)** powered by Flet, and an interactive **Browser Studio** powered by Streamlit.
+Available as a **Native Desktop Application (Windows, macOS, Linux)** powered by Flet (Flutter engine).
 
 ---
 
@@ -17,7 +17,7 @@ Available both as a **Native Desktop App (Windows, macOS, Linux)** powered by Fl
 
 ---
 
-##  Architecture
+## Architecture
 
 ```
 Hypersonus-studio/
@@ -28,15 +28,13 @@ Hypersonus-studio/
 │   ├── components/                # Reusable desktop widgets (audio player, DSP sliders)
 │   └── views/                     # Native views (Home, 3D Ping-Pong, Surround, Vocal Remover, BGM)
 │
-├── utils/                         # Core Audio DSP Engine (100% Shared & UI-Agnostic)
+├── utils/                         # Core Audio DSP Engine (Pure Python)
 │   ├── audio_io.py                # Multi-format loader, normalizer, and exporter
 │   ├── dsp_filters.py             # Butterworth bandpass filters & Nyquist bounds validation
 │   ├── spatializer.py             # 3D ping-pong panning & surround sound channel splitter
 │   ├── vocal_remover.py           # Phase-inversion center-channel vocal remover with bass protection
 │   └── stem_separator.py          # AI & Spectral DSP stem separator for BGM & Acapella
 │
-├── pages/                         # Alternative Browser Studio (Streamlit)
-├── app.py                         # Browser Studio entry point
 ├── tests/                         # Automated Unit Tests (Pytest)
 │   └── test_dsp.py                # DSP mathematical validation
 │
@@ -62,8 +60,7 @@ Double-click **`run.bat`** or run in PowerShell / CMD:
 
 ### Direct Python Command
 ```powershell
-python main.py          # Native Desktop App (Default)
-python main.py --web    # Browser Studio (Streamlit)
+python main.py
 ```
 
 ### macOS & Linux
@@ -118,6 +115,5 @@ Hypersonus Studio stands on the shoulders of these open-source projects:
 - **[SoundDevice](https://python-sounddevice.readthedocs.io)** — MIT
 - **[PyDub](https://github.com/jiaaro/pydub)** — MIT
 - **[Librosa](https://librosa.org)** — ISC
-- **[Streamlit](https://streamlit.io)** — Apache 2.0
 - **[FFmpeg](https://ffmpeg.org)** — LGPL / GPL
 

@@ -20,8 +20,7 @@ temp/
 *.ogg
 *.m4a
 
-# Streamlit & Flet Caches and Builds
-.streamlit/
+# Flet Caches and Builds
 build/
 dist/
 

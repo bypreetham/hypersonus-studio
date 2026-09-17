@@ -11,8 +11,7 @@ soundfile>=0.12.1
 sounddevice>=0.5.0
 librosa>=0.10.1
 
-# UI & Visualization
-streamlit>=1.38.0
+# UI & Desktop App
 flet>=0.25.0
 matplotlib>=3.8.0
 
