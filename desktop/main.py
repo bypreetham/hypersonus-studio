@@ -10,10 +10,11 @@ def main(page: ft.Page):
     page.padding = 0
 
     if hasattr(page, "window"):
-        page.window.width = 1040
-        page.window.height = 680
         page.window.min_width = 800
-        page.window.min_height = 520
+        page.window.min_height = 500
+        page.window.width = 1000
+        page.window.height = 640
+        page.window.maximized = True
         page.window.title_bar_hidden = False
         page.window.title_bar_buttons_hidden = False
         page.window.frameless = False
