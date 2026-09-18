@@ -2,20 +2,20 @@ import os
 import flet as ft
 import numpy as np
 from desktop.theme import (
-    create_card, create_badge, PINK_ACCENT, CYAN_ACCENT,
+    create_card, create_badge, AMBER_ACCENT, CYAN_ACCENT,
     TEXT_PRIMARY, TEXT_MUTED
 )
 from desktop.components.dsp_slider import DSPSlider
 from desktop.components.audio_player import DesktopAudioPlayer
 from utils.song_item import SongItem
-from utils.vocal_remover import remove_vocals_phase
+from utils.vocal_remover import extract_vocals_phase, extract_vocals_multistage_dsp
 from utils.stem_separator import separate_stems, is_spleeter_available
 
-class VocalRemoverView(ft.Column):
+class VocalExtractorView(ft.Column):
     """
-    Dedicated BGM & Instrumental Extractor (Vocal Remover) View.
-    Removes vocals to isolate backing music and accompaniment using
-    phase cancellation, bass retention, spectral DSP, or neural separation.
+    Dedicated Acapella & Lead Vocal Extractor View.
+    Isolates clean vocals using STFT spectral center coherence masking,
+    harmonic-percussive decomposition, or deep learning neural networks.
     """
     def __init__(self, page: ft.Page):
         super().__init__()
@@ -44,7 +44,7 @@ class VocalRemoverView(ft.Column):
             ft.Row(
                 controls=[
                     ft.Column([
-                        ft.Text("Input Song for BGM Extraction", size=15, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
+                        ft.Text("Input Song for Vocal Extraction", size=15, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
                         self.file_status,
                     ], spacing=4),
                     self.select_btn,
@@ -54,7 +54,7 @@ class VocalRemoverView(ft.Column):
         )
 
         # Region Selection Controls (Start Pos & End Pos)
-        self.range_info_badge = create_badge("Full Track (00:00.0 - 00:00.0)", PINK_ACCENT)
+        self.range_info_badge = create_badge("Full Track (00:00.0 - 00:00.0)", AMBER_ACCENT)
 
         self.start_pos_slider = DSPSlider("Start Position", 0.0, 100.0, 0.0, step=0.5, unit="s", on_change=self._on_range_slider_changed)
         self.end_pos_slider = DSPSlider("End Position", 0.0, 100.0, 100.0, step=0.5, unit="s", on_change=self._on_range_slider_changed)
@@ -82,7 +82,7 @@ class VocalRemoverView(ft.Column):
             ft.Column([
                 ft.Row(
                     controls=[
-                        ft.Text("✂️ Song Region & Range Selection", size=15, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
+                        ft.Text("✂️ Vocal Segment & Region Selection", size=15, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
                         self.range_info_badge,
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -101,82 +101,90 @@ class VocalRemoverView(ft.Column):
             ], spacing=10)
         )
 
-        # Engine Selection
+        # Extraction Engine Selection
         spleeter_ok = is_spleeter_available()
         engine_options = [
-            ft.dropdown.Option("phase", "⚡ Fast Phase Cancellation (Instant Center Vocal Removal)"),
-            ft.dropdown.Option("spectral", "🎼 Spectral DSP (Harmonic-Percussive BGM Isolation)"),
+            ft.dropdown.Option("multistage", "🚀 Multi-Stage Spectral Isolator (HPSS + Side Subtraction + VAD Gate) [Recommended]"),
+            ft.dropdown.Option("phase", "⚡ Fast Center Coherence (Legacy Phase Mask)"),
+            ft.dropdown.Option("spectral", "🎼 Spectral Harmonic Extraction (Harmonic-Percussive Separation)"),
         ]
         if spleeter_ok:
-            engine_options.append(ft.dropdown.Option("spleeter", "🧠 Spleeter Neural Network (Accompaniment Stem Model)"))
+            engine_options.append(ft.dropdown.Option("spleeter", "🧠 Spleeter Neural Network (Deep Learning Acapella Model)"))
 
         self.engine_dropdown = ft.Dropdown(
-            label="BGM Extraction Engine",
+            label="Vocal Extraction Engine",
             options=engine_options,
-            value="phase",
-            width=520,
+            value="multistage",
+            width=560,
             on_change=self._on_engine_change,
         )
 
-        # BGM DSP Tuning
-        self.bass_checkbox = ft.Checkbox(
-            label="Preserve Sub-Bass & Kick Drum",
-            value=True,
-            active_color=PINK_ACCENT,
-        )
-        self.bass_slider = DSPSlider("Bass Protection Cutoff", 60, 250, 140, step=10, unit=" Hz")
-        self.gain_slider = DSPSlider("Output Gain Boost", 0.8, 2.0, 1.2, step=0.1, unit="x")
+        # Vocal Tuning Controls
+        self.music_suppression = DSPSlider("Music Suppression Strength (Side Cancellation)", 0.5, 3.0, 1.6, step=0.1, unit="x")
+        self.gate_threshold = DSPSlider("Vocal Activity Gate (Silence Intro/Breaks)", 0.0, 0.8, 0.40, step=0.05, unit="")
+        self.harmonic_margin = DSPSlider("Harmonic Vocal Focus (Guitar Pluck / Transient Rejection)", 1.0, 3.0, 1.5, step=0.1, unit="x")
+        self.vocal_lowcut = DSPSlider("Vocal Highpass Cutoff (Bass Reject)", 60, 300, 120, step=10, unit=" Hz")
+        self.vocal_highcut = DSPSlider("Vocal Lowpass Cutoff (Cymbal Reject)", 4000, 12000, 7500, step=500, unit=" Hz")
+        self.gain_slider = DSPSlider("Vocal Output Gain", 0.8, 2.5, 1.2, step=0.1, unit="x")
 
-        self.phase_options_col = ft.Column([
-            self.bass_checkbox,
+        self.dsp_tuning_col = ft.Column([
+            ft.Text("🎤 Spectral Vocal Filters & Music Suppression Tuning", size=13, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
             ft.Row([
-                ft.Column([self.bass_slider], expand=True),
+                ft.Column([self.music_suppression], expand=True),
+                ft.Column([self.gate_threshold], expand=True),
+            ], spacing=20),
+            ft.Row([
+                ft.Column([self.harmonic_margin], expand=True),
                 ft.Column([self.gain_slider], expand=True),
+            ], spacing=20),
+            ft.Row([
+                ft.Column([self.vocal_lowcut], expand=True),
+                ft.Column([self.vocal_highcut], expand=True),
             ], spacing=20),
         ], spacing=10, visible=True)
 
         self.engine_hint_text = ft.Text(
-            "Phase inversion instantly subtracts center-panned vocals while retaining low-end bass and drums.",
+            "Multi-Stage Isolator: Side-channel spectral subtraction removes stereo instruments, HPSS strips guitar plucks, and dynamic VAD gates out non-vocal sections.",
             size=12,
             color=TEXT_MUTED,
         )
 
         engine_card = create_card(
             ft.Column([
-                ft.Text("⚙️ Engine & BGM Parameters", size=15, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
+                ft.Text("⚙️ Engine & Vocal Filter Controls", size=15, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
                 self.engine_dropdown,
                 self.engine_hint_text,
-                self.phase_options_col,
+                self.dsp_tuning_col,
             ], spacing=12)
         )
 
         # Process Action
-        self.progress_ring = ft.ProgressRing(visible=False, width=22, height=22, stroke_width=3, color=PINK_ACCENT)
+        self.progress_ring = ft.ProgressRing(visible=False, width=22, height=22, stroke_width=3, color=AMBER_ACCENT)
         self.extract_btn = ft.FilledButton(
-            "Extract BGM (Remove Vocals)",
-            icon=ft.Icons.PIANO_ROUNDED,
+            "Extract Acapella Vocals",
+            icon=ft.Icons.MIC_ROUNDED,
             disabled=True,
-            style=ft.ButtonStyle(bgcolor=PINK_ACCENT, color="#FFFFFF"),
+            style=ft.ButtonStyle(bgcolor=AMBER_ACCENT, color="#0A0E17"),
             on_click=self._process_audio,
         )
 
         action_row = ft.Row([self.extract_btn, self.progress_ring], alignment=ft.MainAxisAlignment.START, spacing=12)
 
-        # Audio Players: Original & Extracted BGM
-        self.orig_player = DesktopAudioPlayer("Original Track (SongItem)", PINK_ACCENT)
-        self.bgm_player = DesktopAudioPlayer("Isolated BGM (Instrumental Track)", CYAN_ACCENT)
+        # Audio Players: Original & Extracted Vocals
+        self.orig_player = DesktopAudioPlayer("Original Track (SongItem)", CYAN_ACCENT)
+        self.voc_player = DesktopAudioPlayer("Isolated Acapella Vocals", AMBER_ACCENT)
 
         orig_row = ft.Row([
             ft.Container(self.orig_player, expand=True),
         ])
 
         output_row = ft.Row([
-            ft.Container(self.bgm_player, expand=True),
+            ft.Container(self.voc_player, expand=True),
         ])
 
         self.controls = [
-            ft.Text("🎹 BGM Extractor & Vocal Remover", size=24, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
-            ft.Text("Removes center-panned lead vocals to generate studio instrumental and karaoke backing tracks.", size=13, color=TEXT_MUTED),
+            ft.Text("🎤 Acapella Vocal Extractor", size=24, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
+            ft.Text("Extracts clean lead vocals and speech from songs by stripping away background music and stereo instrumentation.", size=13, color=TEXT_MUTED),
             file_card,
             orig_row,
             region_card,
@@ -187,15 +195,18 @@ class VocalRemoverView(ft.Column):
 
     def _on_engine_change(self, e):
         val = self.engine_dropdown.value
-        if val == "phase":
-            self.phase_options_col.visible = True
-            self.engine_hint_text.value = "Phase inversion instantly subtracts center-panned vocals while retaining low-end bass and drums."
+        if val == "multistage":
+            self.dsp_tuning_col.visible = True
+            self.engine_hint_text.value = "Multi-Stage Isolator: Side spectral subtraction strips stereo guitars/music, HPSS separates plucks, and dynamic VAD gates non-singing sections."
+        elif val == "phase":
+            self.dsp_tuning_col.visible = True
+            self.engine_hint_text.value = "STFT Center Coherence analyzes spectral phase agreement to isolate lead vocals from stereo backing."
         elif val == "spectral":
-            self.phase_options_col.visible = False
-            self.engine_hint_text.value = "Spectral DSP uses harmonic-percussive decomposition to isolate backing music without neural networks."
+            self.dsp_tuning_col.visible = False
+            self.engine_hint_text.value = "Spectral Harmonic Separation isolates continuous vocal formants from percussive and transient instrument sounds."
         elif val == "spleeter":
-            self.phase_options_col.visible = False
-            self.engine_hint_text.value = "Spleeter uses deep learning neural networks to isolate high-fidelity accompaniment."
+            self.dsp_tuning_col.visible = False
+            self.engine_hint_text.value = "Spleeter uses deep learning neural networks to isolate high-fidelity vocals."
         self.update()
 
     def _on_file_selected(self, e: ft.FilePickerResultEvent):
@@ -208,10 +219,10 @@ class VocalRemoverView(ft.Column):
             dur = self.song_item.duration_seconds
             status_text = f"Loaded: {self.song_item.filename} ({self.song_item.format_time(dur)})"
             if self.song_item.channels < 2:
-                status_text += " [Mono - Stereo phase inversion requires stereo, or switch to Spectral DSP]"
+                status_text += " [Mono - Spectral harmonic mode recommended]"
 
             self.file_status.value = status_text
-            self.file_status.color = PINK_ACCENT
+            self.file_status.color = AMBER_ACCENT
             self.extract_btn.disabled = False
 
             # Configure Region Sliders
@@ -310,32 +321,40 @@ class VocalRemoverView(ft.Column):
             base_name, _ = os.path.splitext(self.song_item.filename)
             range_tag = f"_{int(self.song_item.start_pos)}s-{int(self.song_item.end_pos)}s" if self.song_item.range_duration < self.song_item.duration_seconds else ""
 
-            if engine_choice == "phase":
-                bgm = remove_vocals_phase(
+            if engine_choice == "multistage":
+                vocals = extract_vocals_multistage_dsp(
                     samples=trimmed_samples,
                     fs=fs,
-                    preserve_bass=self.bass_checkbox.value,
-                    bass_cutoff_hz=self.bass_slider.get_value(),
+                    music_suppression=self.music_suppression.get_value(),
+                    gate_threshold=self.gate_threshold.get_value(),
+                    harmonic_margin=self.harmonic_margin.get_value(),
+                    lowcut_hz=self.vocal_lowcut.get_value(),
+                    highcut_hz=self.vocal_highcut.get_value(),
                     gain_boost=self.gain_slider.get_value(),
                 )
-                engine_label = "Phase Cancellation"
+                engine_label = "Multi-Stage Spectral Isolator"
+            elif engine_choice == "phase":
+                vocals = extract_vocals_phase(
+                    samples=trimmed_samples,
+                    fs=fs,
+                    lowcut_hz=self.vocal_lowcut.get_value(),
+                    highcut_hz=self.vocal_highcut.get_value(),
+                    sensitivity=self.music_suppression.get_value(),
+                    gain_boost=self.gain_slider.get_value(),
+                )
+                engine_label = "Fast Stereo DSP"
             else:
-                _, bgm, engine_label = separate_stems(
+                vocals, _, engine_label = separate_stems(
                     samples=trimmed_samples,
                     fs=fs,
                     engine=engine_choice,
                 )
 
-            self.bgm_player.load_samples(bgm, fs, f"{base_name}{range_tag}_BGM.wav")
-            self.file_status.value = f"BGM extraction complete via {engine_label}!"
+            self.voc_player.load_samples(vocals, fs, f"{base_name}{range_tag}_Vocals.wav")
+            self.file_status.value = f"Vocal extraction complete via {engine_label}!"
         except Exception as ex:
             self.file_status.value = f"Error: {ex}"
         finally:
             self.extract_btn.disabled = False
             self.progress_ring.visible = False
             self.update()
-
-
-# Aliases
-BgmExtractorView = VocalRemoverView
-StemSeparatorView = VocalRemoverView

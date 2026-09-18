@@ -14,6 +14,7 @@ Available as a **Native Desktop Application (Windows, macOS, Linux)** powered by
 | **2. Binaural Surround Splitter** | `surroundSound.py` | Frequency-based channel splitting (vocals to one ear, instruments to the other), adjustable crossfeed blend (to prevent ear fatigue), and ear-swap toggle. |
 | **3. Fast Vocal Remover** | `vocal_remover.py` | Instant center-channel phase inversion (`L - R`), intelligent lowpass bass preservation (keeps kick & bassline intact), and output gain compensation. |
 | **4. AI BGM & Vocal Extractor** | `audionumpy.py` | High-fidelity stem separation into isolated Vocals and Background Music (BGM), supporting Spleeter neural networks and high-speed Spectral DSP decomposition. |
+| **5. Demucs Multi-Stem Splitter** | `Demucs-audio-splitter` | Deep learning source separation supporting 4 Stems (Vocals, Drums, Bass, Other) and 6 Stems (including dedicated Guitar & Piano) with CUDA GPU acceleration and batch export. |
 
 ---
 
@@ -23,17 +24,18 @@ Available as a **Native Desktop Application (Windows, macOS, Linux)** powered by
 Hypersonus-studio/
 │
 ├── desktop/                       # Native Desktop Application (Flet / Flutter)
-│   ├── main.py                    # Desktop entry point (1220x840 window, NavigationRail)
+│   ├── main.py                    # Desktop entry point (NavigationRail, Window controls)
 │   ├── theme.py                   # Dark theme color tokens & container cards
 │   ├── components/                # Reusable desktop widgets (audio player, DSP sliders)
-│   └── views/                     # Native views (Home, 3D Ping-Pong, Surround, Vocal Remover, BGM)
+│   └── views/                     # Native views (Home, 3D Ping-Pong, Surround, Vocal Remover, BGM, Demucs Splitter)
 │
 ├── utils/                         # Core Audio DSP Engine (Pure Python)
 │   ├── audio_io.py                # Multi-format loader, normalizer, and exporter
 │   ├── dsp_filters.py             # Butterworth bandpass filters & Nyquist bounds validation
 │   ├── spatializer.py             # 3D ping-pong panning & surround sound channel splitter
 │   ├── vocal_remover.py           # Phase-inversion center-channel vocal remover with bass protection
-│   └── stem_separator.py          # AI & Spectral DSP stem separator for BGM & Acapella
+│   ├── stem_separator.py          # AI & Spectral DSP stem separator for BGM & Acapella
+│   └── demucs_splitter.py         # Demucs 4-stem and 6-stem neural source separator adapter
 │
 ├── tests/                         # Automated Unit Tests (Pytest)
 │   └── test_dsp.py                # DSP mathematical validation

@@ -1,6 +1,9 @@
 import flet as ft
 from desktop.theme import BG_COLOR, SURFACE_COLOR, CYAN_ACCENT, TEXT_PRIMARY, TEXT_MUTED
-from desktop.views import HomeView, PingPongView, SurroundView, VocalRemoverView, StemSeparatorView
+from desktop.views import (
+    HomeView, PingPongView, SurroundView, VocalRemoverView,
+    VocalExtractorView, DemucsSplitterView
+)
 
 def main(page: ft.Page):
     # Window Configuration
@@ -95,7 +98,8 @@ def main(page: ft.Page):
         lambda: PingPongView(page),
         lambda: SurroundView(page),
         lambda: VocalRemoverView(page),
-        lambda: StemSeparatorView(page),
+        lambda: VocalExtractorView(page),
+        lambda: DemucsSplitterView(page),
     ]
 
     def render_view(index: int):
@@ -141,14 +145,19 @@ def main(page: ft.Page):
                 label="Surround",
             ),
             ft.NavigationRailDestination(
-                icon=ft.Icons.MIC_OFF_ROUNDED,
-                selected_icon=ft.Icons.MIC_OFF_ROUNDED,
-                label="Vocal Remover",
+                icon=ft.Icons.PIANO_ROUNDED,
+                selected_icon=ft.Icons.PIANO_ROUNDED,
+                label="BGM Extractor",
             ),
             ft.NavigationRailDestination(
-                icon=ft.Icons.AUTO_AWESOME_ROUNDED,
-                selected_icon=ft.Icons.AUTO_AWESOME_ROUNDED,
-                label="BGM Extractor",
+                icon=ft.Icons.MIC_ROUNDED,
+                selected_icon=ft.Icons.MIC_ROUNDED,
+                label="Vocal Extractor",
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.Icons.CALL_SPLIT_ROUNDED,
+                selected_icon=ft.Icons.CALL_SPLIT_ROUNDED,
+                label="Demucs Splitter",
             ),
         ],
         on_change=on_nav_change,

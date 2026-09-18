@@ -96,24 +96,33 @@ class HomeView(ft.Column):
             2,
         )
         card3 = self._build_feature_card(
-            "🎙️ Fast Vocal Remover",
-            "Instant phase-inversion center vocal cancellation with intelligent lowpass bass preservation.",
+            "🎹 BGM & Instrumental Extractor",
+            "Removes center-panned vocals to extract clean backing music and instrumental karaoke tracks.",
             "vocal_remover.py",
             PINK_ACCENT,
             3,
         )
         card4 = self._build_feature_card(
-            "🎼 AI BGM & Vocal Extractor",
-            "Extracts studio-quality Acapella Vocals and Background Music (BGM) stems using neural & spectral decomposition.",
+            "🎤 Acapella Vocal Extractor",
+            "Isolates lead singing and speech by suppressing background music with STFT center coherence masking.",
             "audionumpy.py",
             AMBER_ACCENT,
             4,
         )
 
-        grid = ft.Row(
+        card5 = self._build_feature_card(
+            "🧠 Demucs Multi-Stem Neural Splitter",
+            "High-fidelity AI source separation into 4 Stems or 6 Stems (including dedicated Guitar & Piano).",
+            "Demucs v4 Hybrid Transformer",
+            CYAN_ACCENT,
+            5,
+        )
+
+        grid = ft.Column(
             controls=[
-                ft.Column([card1, card3], expand=True, spacing=16),
-                ft.Column([card2, card4], expand=True, spacing=16),
+                ft.Row([ft.Container(card1, expand=True), ft.Container(card2, expand=True)], spacing=16),
+                ft.Row([ft.Container(card3, expand=True), ft.Container(card4, expand=True)], spacing=16),
+                ft.Row([ft.Container(card5, expand=True)], spacing=16),
             ],
             spacing=16,
         )
